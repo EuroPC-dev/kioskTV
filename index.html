@@ -293,7 +293,7 @@
       
       try {
         // league=39 (Premier League) - Verander naar league=1 voor het WK
-        let response = await fetch("https://v3.football.api-sports.io/fixtures?league=39&status=FT&last=3", {
+        let response = await fetch("https://v3.football.api-sports.io/fixtures?league=1&status=FT&last=6", {
           method: "GET",
           headers: { "x-apisports-key": API_KEY }
         });
