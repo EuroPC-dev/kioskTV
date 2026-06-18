@@ -1,51 +1,92 @@
-const apiKey = "40dc94f573f9513083b68c7d7ab80ae2"; // Replace with your API key
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WK 2022 Resultaten</title>
+</head>
+<body style="background-color: #f0f2f5; margin: 0; padding: 10px;">
 
-async function displayWorldCupMatches() {
-    try {
-        const url = "https://v3.football.api-sports.io/fixtures?league=1&season=2022&status=FT&last=3";
+    <div id="wc-matches-container">
+        <p style="text-align: center; font-family: Arial; color: #666; padding: 20px;">Wedstrijden laden...</p>
+    </div>
 
-        const response = await fetch(url, {
-            headers: { "x-apisports-key": apiKey }
-        });
+    <script>
+        // Jouw nieuwe werkende API-key
+        const apiKey = "40dc94f573f9513083b68c7d7ab80ae2"; 
 
-        const data = await response.json();
-        const matches = data.response;
+        async function displayWorldCupMatches() {
+            const container = document.getElementById('wc-matches-container');
+            
+            try {
+                // URL aangepast naar het WK 2022 (League 1, Season 2022)
+                const url = "https://v3.football.api-sports.io/fixtures?league=1&season=2022&status=FT&last=3";
 
-        // Create HTML
-        let html = `<div style="font-family: Arial; max-width: 800px; margin: 20px auto;">
-            <h2>Last 3 World Cup Matches</h2>`;
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: { "x-apisports-key": apiKey }
+                });
 
-        matches.forEach((match, index) => {
-            html += `
-            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9f9;">
-                <p style="margin: 0; color: #666; font-size: 12px;"><strong>${match.league.round}</strong> - ${new Date(match.fixture.date).toLocaleDateString()}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
-                    <div style="text-align: center; flex: 1;">
-                        <img src="${match.teams.home.logo}" style="width: 40px; height: 40px; margin-bottom: 5px;">
-                        <p style="margin: 5px 0; font-weight: bold;">${match.teams.home.name}</p>
-                    </div>
-                    <div style="text-align: center; font-size: 24px; font-weight: bold; flex: 1;">
-                        ${match.goals.home} - ${match.goals.away}
-                    </div>
-                    <div style="text-align: center; flex: 1;">
-                        <img src="${match.teams.away.logo}" style="width: 40px; height: 40px; margin-bottom: 5px;">
-                        <p style="margin: 5px 0; font-weight: bold;">${match.teams.away.name}</p>
-                    </div>
-                </div>
-                <p style="margin: 5px 0; font-size: 12px; color: #666;">📍 ${match.fixture.venue.name}</p>
-                <p style="margin: 5px 0; font-size: 12px; color: #666;">Status: ${match.fixture.status.long}</p>
-            </div>`;
-        });
+                const data = await response.json();
 
-        html += `</div>`;
+                // Controleer of de API-server een foutmelding teruggeeft
+                if (data.errors && Object.keys(data.errors).length > 0) {
+                    const foutBericht = data.errors[Object.keys(data.errors)[0]];
+                    container.innerHTML = `<p style="color: red; font-family: Arial; padding: 20px; text-align: center;">API Fout: ${foutBericht}</p>`;
+                    return;
+                }
 
-        // Display in page
-        document.body.innerHTML = html;
+                const matches = data.response;
 
-    } catch (error) {
-        document.body.innerHTML = `<p style="color: red; padding: 20px;">Error: ${error.message}</p>`;
-    }
-}
+                if (!matches || matches.length === 0) {
+                    container.innerHTML = `<p style="font-family: Arial; color: #666; padding: 20px; text-align: center;">Geen wedstrijden gevonden.</p>`;
+                    return;
+                }
 
-// Run when page loads
-displayWorldCupMatches();
+                // Genereer de HTML-structuur
+                let html = `
+                <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 0 15px;">
+                    <h2 style="text-align: center; color: #333;">Laatste 3 WK 2022 Wedstrijden</h2>`;
+
+                matches.forEach((match) => {
+                    html += `
+                    <div style="border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 8px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <p style="margin: 0 0 10px 0; color: #666; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+                            <strong>${match.league.round}</strong> - ${new Date(match.fixture.date).toLocaleDateString('nl-NL')}
+                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0;">
+                            <div style="text-align: center; flex: 1;">
+                                <img src="${match.teams.home.logo}" style="width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px;" alt="logo">
+                                <p style="margin: 5px 0; font-weight: bold; font-size: 14px; color: #222;">${match.teams.home.name}</p>
+                            </div>
+                            
+                            <div style="text-align: center; font-size: 26px; font-weight: bold; flex: 1; color: #1d82c4; font-family: monospace;">
+                                ${match.goals.home} - ${match.goals.away}
+                            </div>
+                            
+                            <div style="text-align: center; flex: 1;">
+                                <img src="${match.teams.away.logo}" style="width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px;" alt="logo">
+                                <p style="margin: 5px 0; font-weight: bold; font-size: 14px; color: #222;">${match.teams.away.name}</p>
+                            </div>
+                        </div>
+                        <p style="margin: 5px 0 0 0; font-size: 12px; color: #888;">📍 ${match.fixture.venue.name || 'Onbekend stadion'}</p>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #888;">Status: ${match.fixture.status.long}</p>
+                    </div>`;
+                });
+
+                html += `</div>`;
+
+                // Duw de gemaakte HTML in de container
+                container.innerHTML = html;
+
+            } catch (error) {
+                container.innerHTML = `<p style="color: red; font-family: Arial; padding: 20px; text-align: center;">Netwerkfout: ${error.message}</p>`;
+            }
+        }
+
+        // Voer de functie uit zodra de pagina geladen is
+        displayWorldCupMatches();
+    </script>
+
+</body>
+</html>
