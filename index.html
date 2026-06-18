@@ -30,7 +30,7 @@
       height: 100%;
       max-height: 100vh;
       max-width: 100vw;
-      background-color: #FF4F00; /* Nederlands elftal oranje */
+      background-color: #FF4F00; 
       box-sizing: border-box;
       overflow: hidden;
     }
@@ -79,7 +79,6 @@
       object-fit: contain;
     }
 
-    /* Zorgt ervoor dat het grid perfect gecentreerd blijft in het witte vlak */
     #matches-container {
       flex-grow: 1;
       display: grid;
@@ -87,8 +86,8 @@
       grid-template-rows: repeat(3, auto);
       column-gap: 12px;
       row-gap: 8px;
-      align-content: center; /* Centreert de rijen verticaal */
-      justify-content: center; /* Centreert de kolommen horizontaal */
+      align-content: center; 
+      justify-content: center; 
     }
 
     .match-row {
@@ -114,11 +113,12 @@
       justify-content: flex-start; 
     }
 
+    /* Vlaggen iets kleiner gemaakt en de hoeken mooi afgerond */
     .team-logo {
-      height: clamp(48px, 9.0cqw, 80px);
+      height: clamp(38px, 7.5cqw, 64px);
       width: auto;
       object-fit: contain;
-      border-radius: 6px;
+      border-radius: 12px; /* Mooie afgeronde hoeken voor de vlaggen */
     }
 
     .score-display {
@@ -128,9 +128,9 @@
       margin: 0 10px;
       font-family: 'Inter', sans-serif;
       font-weight: 900;
-      font-size: clamp(14px, 2.8cqw, 22px);
+      font-size: clamp(13px, 2.5cqw, 20px); /* Iets meegezakt met de grootte van de rij */
       color: #ffffff; 
-      min-width: 60px;
+      min-width: 55px;
       text-align: center;
       letter-spacing: 0.5px;
       white-space: nowrap;
