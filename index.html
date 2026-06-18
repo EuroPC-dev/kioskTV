@@ -113,12 +113,14 @@
       justify-content: flex-start; 
     }
 
-    /* Vlaggen iets kleiner gemaakt en de hoeken mooi afgerond */
+    /* Vlaggen omgetoverd tot een rechthoekige squircle */
     .team-logo {
       height: clamp(38px, 7.5cqw, 64px);
       width: auto;
       object-fit: contain;
-      border-radius: 12px; /* Mooie afgeronde hoeken voor de vlaggen */
+      /* Een inset clip-path zorgt voor de perfecte organische curves van een rechthoekige squircle */
+      clip-path: inset(0% 0% 0% 0% round 14px / 14px);
+      -webkit-clip-path: inset(0% 0% 0% 0% round 14px / 14px);
     }
 
     .score-display {
@@ -128,7 +130,7 @@
       margin: 0 10px;
       font-family: 'Inter', sans-serif;
       font-weight: 900;
-      font-size: clamp(13px, 2.5cqw, 20px); /* Iets meegezakt met de grootte van de rij */
+      font-size: clamp(13px, 2.5cqw, 20px); 
       color: #ffffff; 
       min-width: 55px;
       text-align: center;
