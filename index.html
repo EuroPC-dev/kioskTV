@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Screen YouTube Playlist</title>
+    <style>
+        /* Eliminate all default spacing and hide scrollbars */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+        
+        /* Make the container fill the entire viewport */
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Stretch the iframe to cover the container completely */
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube-nocookie.com/embed/videoseries?list=PLnJJ42LOJsdHCqcsxa9fl9jZgmUqcMjbu&autoplay=1&mute=1&loop=1&playlist=PLnJJ42LOJsdHCqcsxa9fl9jZgmUqcMjbu" 
+            allow="autoplay; encrypted-media; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+</body>
+</html>
