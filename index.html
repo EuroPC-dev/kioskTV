@@ -1,92 +1,393 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WK 2022 Resultaten</title>
-</head>
-<body style="background-color: #f0f2f5; margin: 0; padding: 10px;">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiosk - WK / PL Resultaten Online</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.cdnfonts.com/css/garet" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 
-    <div id="wc-matches-container">
-        <p style="text-align: center; font-family: Arial; color: #666; padding: 20px;">Wedstrijden laden...</p>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1d82c4; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .kiosk-container {
+      position: relative;
+      aspect-ratio: 9 / 16;
+      width: 100%;
+      height: 100%;
+      max-height: 100vh;
+      max-width: 100vw;
+      background-color: #1d82c4;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .kiosk-video {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: auto;
+      max-height: 33%; 
+      object-fit: contain; 
+      display: block;
+    }
+
+    #score-block {
+      position: absolute;
+      top: 8%; 
+      left: 5%;
+      width: 90%;
+      height: 21%; 
+      background-color: #333333; 
+      border-radius: 15px;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      padding: 12px 10px;
+      font-family: 'Inter', sans-serif;
+      color: white;
+    }
+
+    #score-header {
+      font-weight: 900;
+      font-size: clamp(12px, 2.5cqw, 20px);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+      color: #1d82c4; 
+      text-align: center;
+    }
+
+    #matches-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    }
+
+    .match-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(11px, 2.2cqw, 18px);
+      padding: 2px 0;
+    }
+
+    .team-left { 
+      text-align: right; 
+      flex: 1; 
+      display: flex; 
+      justify-content: flex-end; 
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .team-right { 
+      text-align: left; 
+      flex: 1; 
+      display: flex; 
+      justify-content: flex-start; 
+      align-items: center;
+      gap: 8px;
+    }
+
+    .team-logo {
+      height: clamp(14px, 2.8cqw, 24px);
+      width: auto;
+      object-fit: contain;
+    }
+
+    .score-display {
+      background-color: #222;
+      padding: 2px 8px;
+      border-radius: 5px;
+      margin: 0 10px;
+      font-family: monospace;
+      color: #22c55e; 
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .match-status {
+      font-size: clamp(9px, 1.8cqw, 14px);
+      color: #aaaaaa;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    #info-bar {
+      position: absolute;
+      top: 38%;        
+      height: 21%;     
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center;     
+      color: white;
+      text-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5), 0px 0px 8px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      box-sizing: border-box;
+      gap: 0px;
+    }
+
+    #video-onder {
+      top: 59%; 
+    }
+
+    .live-klok {
+      font-family: 'Garet', sans-serif;
+      font-weight: 850; 
+      font-size: clamp(55px, 15cqw, 210px);
+      line-height: 0.82;
+      letter-spacing: -2px;
+    }
+
+    .live-datum {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(20px, 5cqw, 70px);
+      line-height: 1;
+      font-weight: 900;
+      margin-top: 5px;
+    }
+
+    #news-bar {
+      position: absolute;
+      bottom: 4%; 
+      left: 5%;   
+      width: 90%; 
+      height: clamp(40px, 6.5cqw, 90px); 
+      background-color: #333333; 
+      border-radius: 10px; 
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      box-sizing: border-box;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+
+    #news-logo {
+      height: 55%; 
+      width: auto;
+      margin-right: 12px;
+      display: block;
+      object-fit: contain;
+    }
+
+    #news-text-container {
+      flex-grow: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; 
+      height: 100%;
+    }
+
+    #news-ticker {
+      font-family: 'Inter', sans-serif;
+      color: white;
+      font-weight: 700;
+      text-align: left; 
+      white-space: normal; 
+      display: -webkit-box;
+      -webkit-line-clamp: 2; 
+      -webkit-box-orient: vertical;
+      width: 100%;
+      font-size: clamp(11px, 2.1cqw, 22px); 
+      line-height: 1.15;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="kiosk-container">
+    <div id="score-block">
+      <div id="score-header">Laatste Resultaten</div>
+      <div id="matches-container">
+        <div style="text-align:center;color:#aaa;font-size:13px;margin-top:15px;">API Status controleren...</div>
+      </div>
     </div>
 
-    <script>
-        // Jouw nieuwe werkende API-key
-        const apiKey = "40dc94f573f9513083b68c7d7ab80ae2"; 
+    <div id="info-bar">
+      <div class="live-klok" id="live-klok">--:--</div>
+      <div class="live-datum" id="live-datum">--- -- ---</div>
+    </div>
 
-        async function displayWorldCupMatches() {
-            const container = document.getElementById('wc-matches-container');
-            
-            try {
-                // URL aangepast naar het WK 2022 (League 1, Season 2022)
-                const url = "https://v3.football.api-sports.io/fixtures?league=1&season=2026&status=FT";
+    <video id="video-onder" class="kiosk-video" autoplay muted loop playsinline>
+      <source src="video1.mp4" type="video/mp4" />
+    </video>
 
-                const response = await fetch(url, {
-                    method: "GET",
-                    headers: { "x-apisports-key": apiKey }
-                });
+    <div id="news-bar">
+      <img id="news-logo" src="nu.png" alt="NU.nl Logo" />
+      <div id="news-text-container">
+        <div id="news-ticker">Nieuws wordt geladen...</div>
+      </div>
+    </div>
+  </div>
 
-                const data = await response.json();
+  <script>
+    const API_KEY = "18c0f3bc75069294f99cb69e055d6d08"; 
 
-                // Controleer of de API-server een foutmelding teruggeeft
-                if (data.errors && Object.keys(data.errors).length > 0) {
-                    const foutBericht = data.errors[Object.keys(data.errors)[0]];
-                    container.innerHTML = `<p style="color: red; font-family: Arial; padding: 20px; text-align: center;">API Fout: ${foutBericht}</p>`;
-                    return;
-                }
+    async function startScorebordsysteem() {
+      const container = document.getElementById('matches-container');
+      
+      try {
+        let response = await fetch("https://v3.football.api-sports.io/status", {
+          method: "GET",
+          headers: { "x-apisports-key": API_KEY }
+        });
+        let data = await response.json();
 
-                const matches = data.response;
-
-                if (!matches || matches.length === 0) {
-                    container.innerHTML = `<p style="font-family: Arial; color: #666; padding: 20px; text-align: center;">Geen wedstrijden gevonden.</p>`;
-                    return;
-                }
-
-                // Genereer de HTML-structuur
-                let html = `
-                <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 0 15px;">
-                    <h2 style="text-align: center; color: #333;">Laatste 3 WK 2022 Wedstrijden</h2>`;
-
-                matches.forEach((match) => {
-                    html += `
-                    <div style="border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 8px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <p style="margin: 0 0 10px 0; color: #666; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
-                            <strong>${match.league.round}</strong> - ${new Date(match.fixture.date).toLocaleDateString('nl-NL')}
-                        </p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0;">
-                            <div style="text-align: center; flex: 1;">
-                                <img src="${match.teams.home.logo}" style="width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px;" alt="logo">
-                                <p style="margin: 5px 0; font-weight: bold; font-size: 14px; color: #222;">${match.teams.home.name}</p>
-                            </div>
-                            
-                            <div style="text-align: center; font-size: 26px; font-weight: bold; flex: 1; color: #1d82c4; font-family: monospace;">
-                                ${match.goals.home} - ${match.goals.away}
-                            </div>
-                            
-                            <div style="text-align: center; flex: 1;">
-                                <img src="${match.teams.away.logo}" style="width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px;" alt="logo">
-                                <p style="margin: 5px 0; font-weight: bold; font-size: 14px; color: #222;">${match.teams.away.name}</p>
-                            </div>
-                        </div>
-                        <p style="margin: 5px 0 0 0; font-size: 12px; color: #888;">📍 ${match.fixture.venue.name || 'Onbekend stadion'}</p>
-                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #888;">Status: ${match.fixture.status.long}</p>
-                    </div>`;
-                });
-
-                html += `</div>`;
-
-                // Duw de gemaakte HTML in de container
-                container.innerHTML = html;
-
-            } catch (error) {
-                container.innerHTML = `<p style="color: red; font-family: Arial; padding: 20px; text-align: center;">Netwerkfout: ${error.message}</p>`;
-            }
+        // CONTROLEER OP SPECIFIEKE SERVER FOUTMELDINGEN BIJ DE STATUS CHECK
+        if (data.errors && Object.keys(data.errors).length > 0) {
+          const foutType = Object.keys(data.errors)[0];
+          const foutBericht = data.errors[foutType];
+          container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">API Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
+          return;
         }
 
-        // Voer de functie uit zodra de pagina geladen is
-        displayWorldCupMatches();
-    </script>
+        if (data && data.response) {
+          const sub = data.response.subscription;
+          const req = data.response.requests;
 
+          if (sub.active !== true) {
+            container.innerHTML = '<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">API Abonnement inactief.</div>';
+            return;
+          }
+          if (req.current >= req.limit_day) {
+            container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Limiet bereikt! (${req.current}/${req.limit_day})</div>`;
+            return;
+          }
+          
+          // Alles ok? Haal de uitslagen op!
+          haalLaatsteResultatenOp();
+        }
+      } catch (e) {
+        // Fallback bij netwerkprobleem
+        haalLaatsteResultatenOp();
+      }
+    }
+
+    async function haalLaatsteResultatenOp() {
+      const container = document.getElementById('matches-container');
+      
+      try {
+        // league=39 (Premier League) - Verander naar league=1 voor het WK
+        let response = await fetch("https://v3.football.api-sports.io/fixtures?league=39&status=FT&last=3", {
+          method: "GET",
+          headers: { "x-apisports-key": API_KEY }
+        });
+        let data = await response.json();
+
+        // CONTROLEER OP SPECIFIEKE SERVER FOUTMELDINGEN BIJ HET OPHALEN VAN DE WEDSTRIJDEN
+        if (data.errors && Object.keys(data.errors).length > 0) {
+          const foutType = Object.keys(data.errors)[0];
+          const foutBericht = data.errors[foutType];
+          container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">Data Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
+          return;
+        }
+
+        container.innerHTML = '';
+
+        if (data && data.response && data.response.length > 0) {
+          data.response.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'match-row';
+            const teams = item.teams;
+            const goals = item.goals;
+
+            row.innerHTML = `
+              <div class="team-left">
+                <span>${teams.home.name}</span>
+                <img class="team-logo" src="${teams.home.logo}" alt="vlag" />
+              </div>
+              <div class="score-display">${goals.home ?? 0} - ${goals.away ?? 0}</div>
+              <div class="team-right">
+                <img class="team-logo" src="${teams.away.logo}" alt="vlag" />
+                <span>${teams.away.name}</span>
+              </div>
+              <div class="match-status">Afgelopen</div>
+            `;
+            container.appendChild(row);
+          });
+        } else {
+          container.innerHTML = '<div style="text-align:center;color:#aaa;font-size:13px;margin-top:15px;">Geen uitslagen gevonden.</div>';
+        }
+      } catch (err) {
+        container.innerHTML = '<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Verbindingsfout (Netwerk).</div>';
+      }
+    }
+    
+    // Start direct op bij laden
+    startScorebordsysteem();
+    
+    // Ververs elke 120 minuten (7200000 ms)
+    setInterval(startScorebordsysteem, 7200000); 
+
+    // Live Klok
+    function updateKlokEnDatum() {
+      const nu = new Date();
+      document.getElementById('live-klok').textContent = `${String(nu.getHours()).padStart(2, '0')}:${String(nu.getMinutes()).padStart(2, '0')}`;
+      const dagen = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'];
+      const maanden = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
+      document.getElementById('live-datum').textContent = `${dagen[nu.getDay()]} ${nu.getDate()} ${maanden[nu.getMonth()]}`;
+    }
+    updateKlokEnDatum();
+    setInterval(updateKlokEnDatum, 1000);
+
+    // Nieuwsbalk (NU.nl RSS)
+    let nieuwsArtikelen = [];
+    let huidigArtikelIndex = 0;
+    async function haalNieuwsOp() {
+      try {
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://www.nu.nl/rss/Algemeen')}`);
+        const data = await response.json();
+        if (data.status === 'ok' && data.items.length > 0) {
+          nieuwsArtikelen = data.items.map(item => item.title.replace(/\[\w+\]/gi, '').trim());
+          toonVolgendNieuws();
+        }
+      } catch (e) {}
+    }
+    function toonVolgendNieuws() {
+      if (nieuwsArtikelen.length === 0) return;
+      document.getElementById('news-ticker').textContent = nieuwsArtikelen[huidigArtikelIndex];
+      pasTekstGrootteAan();
+      huidigArtikelIndex = (huidigArtikelIndex + 1) % nieuwsArtikelen.length;
+    }
+    function pasTekstGrootteAan() {
+      const ticker = document.getElementById('news-ticker');
+      const container = document.getElementById('news-text-container');
+      let huidigeGrootte = parseFloat(window.getComputedStyle(container).getPropertyValue('font-size'));
+      ticker.style.fontSize = ''; 
+      while ((ticker.scrollHeight > container.clientHeight || ticker.scrollWidth > container.clientWidth * 2) && huidigeGrootte > 8) {
+        huidigeGrootte -= 0.5;
+        ticker.style.fontSize = huidigeGrootte + "px";
+      }
+    }
+    haalNieuwsOp();
+    setInterval(toonVolgendNieuws, 8000); 
+    setInterval(haalNieuwsOp, 600000);    
+    window.addEventListener('resize', pasTekstGrootteAan);
+  </script>
 </body>
 </html>
