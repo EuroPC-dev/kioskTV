@@ -1,127 +1,51 @@
-// VERVANG DIT DOOR JOUW EIGEN CLOUDFLARE WORKER URL (ZONDER / ER ACHTER!)
-const CLOUDFLARE_PROXY_URL = "https://voetbal-api-proxy.jouwnaam.workers.dev"; 
+const apiKey = "40dc94f573f9513083b68c7d7ab80ae2"; // Replace with your API key
 
-async function startScorebordsysteem() {
-  const container = document.getElementById('matches-container');
-  
-  try {
-    // We checken de status via Cloudflare
-    let response = await fetch(`${CLOUDFLARE_PROXY_URL}/status`);
-    let data = await response.json();
+async function displayWorldCupMatches() {
+    try {
+        const url = "https://v3.football.api-sports.io/fixtures?league=1&season=2022&status=FT&last=3";
 
-    if (data.errors && Object.keys(data.errors).length > 0) {
-      const foutType = Object.keys(data.errors)[0];
-      const foutBericht = data.errors[foutType];
-      container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">API Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
-      return;
+        const response = await fetch(url, {
+            headers: { "x-apisports-key": apiKey }
+        });
+
+        const data = await response.json();
+        const matches = data.response;
+
+        // Create HTML
+        let html = `<div style="font-family: Arial; max-width: 800px; margin: 20px auto;">
+            <h2>Last 3 World Cup Matches</h2>`;
+
+        matches.forEach((match, index) => {
+            html += `
+            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9f9;">
+                <p style="margin: 0; color: #666; font-size: 12px;"><strong>${match.league.round}</strong> - ${new Date(match.fixture.date).toLocaleDateString()}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
+                    <div style="text-align: center; flex: 1;">
+                        <img src="${match.teams.home.logo}" style="width: 40px; height: 40px; margin-bottom: 5px;">
+                        <p style="margin: 5px 0; font-weight: bold;">${match.teams.home.name}</p>
+                    </div>
+                    <div style="text-align: center; font-size: 24px; font-weight: bold; flex: 1;">
+                        ${match.goals.home} - ${match.goals.away}
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <img src="${match.teams.away.logo}" style="width: 40px; height: 40px; margin-bottom: 5px;">
+                        <p style="margin: 5px 0; font-weight: bold;">${match.teams.away.name}</p>
+                    </div>
+                </div>
+                <p style="margin: 5px 0; font-size: 12px; color: #666;">📍 ${match.fixture.venue.name}</p>
+                <p style="margin: 5px 0; font-size: 12px; color: #666;">Status: ${match.fixture.status.long}</p>
+            </div>`;
+        });
+
+        html += `</div>`;
+
+        // Display in page
+        document.body.innerHTML = html;
+
+    } catch (error) {
+        document.body.innerHTML = `<p style="color: red; padding: 20px;">Error: ${error.message}</p>`;
     }
-
-    if (data && data.response) {
-      const sub = data.response.subscription;
-      if (sub.active !== true) {
-        container.innerHTML = '<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">API Abonnement inactief.</div>';
-        return;
-      }
-      haalLaatsteResultatenOp();
-    }
-  } catch (e) {
-    haalLaatsteResultatenOp();
-  }
 }
 
-async function haalLaatsteResultatenOp() {
-  const container = document.getElementById('matches-container');
-  
-  try {
-    // We halen de uitslagen op via Cloudflare (league=39 voor Premier League)
-    let response = await fetch(`${CLOUDFLARE_PROXY_URL}/fixtures?league=39&status=FT&last=3`);
-    let data = await response.json();
-
-    if (data.errors && Object.keys(data.errors).length > 0) {
-      const foutType = Object.keys(data.errors)[0];
-      const foutBericht = data.errors[foutType];
-      container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">Data Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
-      return;
-    }
-
-    container.innerHTML = '';
-
-    if (data && data.response && data.response.length > 0) {
-      data.response.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'match-row';
-        const teams = item.teams;
-        const goals = item.goals;
-
-        row.innerHTML = `
-          <div class="team-left">
-            <span>${teams.home.name}</span>
-            <img class="team-logo" src="${teams.home.logo}" alt="vlag" />
-          </div>
-          <div class="score-display">${goals.home ?? 0} - ${goals.away ?? 0}</div>
-          <div class="team-right">
-            <img class="team-logo" src="${teams.away.logo}" alt="vlag" />
-            <span>${teams.away.name}</span>
-          </div>
-          <div class="match-status">Afgelopen</div>
-        `;
-        container.appendChild(row);
-      });
-    } else {
-      container.innerHTML = '<div style="text-align:center;color:#aaa;font-size:13px;margin-top:15px;">Geen uitslagen gevonden.</div>';
-    }
-  } catch (err) {
-    container.innerHTML = '<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Verbindingsfout via Cloudflare.</div>';
-  }
-}
-
-// Start direct op bij laden
-startScorebordsysteem();
-
-// Ververs elke 30 minuten (mag nu gerust vaker, Cloudflare vangt de klappen op!)
-setInterval(startScorebordsysteem, 1800000); 
-
-// Live Klok
-function updateKlokEnDatum() {
-  const nu = new Date();
-  document.getElementById('live-klok').textContent = `${String(nu.getHours()).padStart(2, '0')}:${String(nu.getMinutes()).padStart(2, '0')}`;
-  const dagen = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'];
-  const maanden = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
-  document.getElementById('live-datum').textContent = `${dagen[nu.getDay()]} ${nu.getDate()} ${maanden[nu.getMonth()]}`;
-}
-updateKlokEnDatum();
-setInterval(updateKlokEnDatum, 1000);
-
-// Nieuwsbalk (NU.nl RSS)
-let nieuwsArtikelen = [];
-let huidigArtikelIndex = 0;
-async function haalNieuwsOp() {
-  try {
-    const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://www.nu.nl/rss/Algemeen')}`);
-    const data = await response.json();
-    if (data.status === 'ok' && data.items.length > 0) {
-      nieuwsArtikelen = data.items.map(item => item.title.replace(/\[\w+\]/gi, '').trim());
-      toonVolgendNieuws();
-    }
-  } catch (e) {}
-}
-function toonVolgendNieuws() {
-  if (nieuwsArtikelen.length === 0) return;
-  document.getElementById('news-ticker').textContent = nieuwsArtikelen[huidigArtikelIndex];
-  pasTekstGrootteAan();
-  huidigArtikelIndex = (huidigArtikelIndex + 1) % nieuwsArtikelen.length;
-}
-function pasTekstGrootteAan() {
-  const ticker = document.getElementById('news-ticker');
-  const container = document.getElementById('news-text-container');
-  let huidigeGrootte = parseFloat(window.getComputedStyle(container).getPropertyValue('font-size'));
-  ticker.style.fontSize = ''; 
-  while ((ticker.scrollHeight > container.clientHeight || ticker.scrollWidth > container.clientWidth * 2) && huidigeGrootte > 8) {
-    huidigeGrootte -= 0.5;
-    ticker.style.fontSize = huidigeGrootte + "px";
-  }
-}
-haalNieuwsOp();
-setInterval(toonVolgendNieuws, 8000); 
-setInterval(haalNieuwsOp, 600000);    
-window.addEventListener('resize', pasTekstGrootteAan);
+// Run when page loads
+displayWorldCupMatches();
