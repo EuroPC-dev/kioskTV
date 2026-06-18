@@ -113,14 +113,15 @@
       justify-content: flex-start; 
     }
 
-    /* Vlaggen omgetoverd tot een rechthoekige squircle */
+    /* Vlaggen exact zoals de squircle-vorm met rand in image_e14f26.png */
     .team-logo {
       height: clamp(38px, 7.5cqw, 64px);
       width: auto;
       object-fit: contain;
-      /* Een inset clip-path zorgt voor de perfecte organische curves van een rechthoekige squircle */
-      clip-path: inset(0% 0% 0% 0% round 14px / 14px);
-      -webkit-clip-path: inset(0% 0% 0% 0% round 14px / 14px);
+      border: 1.5px solid #8b2635; /* Het subtiele, bordeaux-achtige randje uit je voorbeeld */
+      border-radius: 16px; /* Vloeiende, zachte squircle-achtige afronding */
+      padding: 1px; /* Geeft een ademruimte tussen de vlag en de border */
+      background-color: #ffffff;
     }
 
     .score-display {
