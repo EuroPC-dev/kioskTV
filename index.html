@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kiosk - WK / PL Resultaten Online</title>
+  <title>Kiosk - WK Resultaten Online</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,10 +47,10 @@
 
     #score-block {
       position: absolute;
-      top: 8%; 
+      top: 5%; 
       left: 5%;
       width: 90%;
-      height: 21%; 
+      height: 28%; 
       background-color: #333333; 
       border-radius: 15px;
       box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
@@ -58,79 +58,80 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      padding: 12px 10px;
+      padding: 15px;
       font-family: 'Inter', sans-serif;
       color: white;
     }
 
     #score-header {
-      font-weight: 900;
-      font-size: clamp(12px, 2.5cqw, 20px);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       border-bottom: 1px solid #444;
-      padding-bottom: 5px;
-      margin-bottom: 5px;
-      color: #1d82c4; 
-      text-align: center;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      height: 45px;
     }
 
-    #matches-container {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-    }
-
-    .match-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-      font-size: clamp(11px, 2.2cqw, 18px);
-      padding: 2px 0;
-    }
-
-    .team-left { 
-      text-align: right; 
-      flex: 1; 
-      display: flex; 
-      justify-content: flex-end; 
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .team-right { 
-      text-align: left; 
-      flex: 1; 
-      display: flex; 
-      justify-content: flex-start; 
-      align-items: center;
-      gap: 8px;
-    }
-
-    .team-logo {
-      height: clamp(14px, 2.8cqw, 24px);
+    #score-header img {
+      height: 100%;
       width: auto;
       object-fit: contain;
     }
 
-    .score-display {
-      background-color: #222;
-      padding: 2px 8px;
-      border-radius: 5px;
-      margin: 0 10px;
-      font-family: monospace;
-      color: #22c55e; 
-      min-width: 40px;
-      text-align: center;
+    /* 2 kolommen naast elkaar, 3 rijen onder elkaar */
+    #matches-container {
+      flex-grow: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(3, 1fr);
+      gap: 12px;
     }
 
-    .match-status {
-      font-size: clamp(9px, 1.8cqw, 14px);
-      color: #aaaaaa;
-      min-width: 70px;
+    .match-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #262626;
+      border-radius: 8px;
+      padding: 5px 10px;
+    }
+
+    .team-side { 
+      flex: 1; 
+      display: flex; 
+      align-items: center;
+    }
+
+    .team-left { 
+      justify-content: flex-end; 
+    }
+    
+    .team-right { 
+      justify-content: flex-start; 
+    }
+
+    /* Vlaggen groter gemaakt aangezien de tekst weg is */
+    .team-logo {
+      height: clamp(24px, 4.5cqw, 40px);
+      width: auto;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    /* Prachtig dik Inter font voor de stand */
+    .score-display {
+      background-color: #1a1a1a;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin: 0 10px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: clamp(14px, 2.8cqw, 22px);
+      color: #22c55e; 
+      min-width: 45px;
       text-align: center;
+      letter-spacing: 0.5px;
     }
 
     #info-bar {
@@ -147,7 +148,6 @@
       text-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5), 0px 0px 8px rgba(0, 0, 0, 0.3);
       z-index: 10;
       box-sizing: border-box;
-      gap: 0px;
     }
 
     #video-onder {
@@ -222,9 +222,11 @@
 
   <div class="kiosk-container">
     <div id="score-block">
-      <div id="score-header">Laatste Resultaten</div>
+      <div id="score-header">
+        <img src="WK.png" alt="WK 2026 Logo" />
+      </div>
       <div id="matches-container">
-        <div style="text-align:center;color:#aaa;font-size:13px;margin-top:15px;">API Status controleren...</div>
+        <div style="grid-column: span 2; text-align:center; color:#aaa; font-size:13px; margin-top:15px;">API Status controleren...</div>
       </div>
     </div>
 
@@ -258,11 +260,10 @@
         });
         let data = await response.json();
 
-        // CONTROLEER OP SPECIFIEKE SERVER FOUTMELDINGEN BIJ DE STATUS CHECK
         if (data.errors && Object.keys(data.errors).length > 0) {
           const foutType = Object.keys(data.errors)[0];
           const foutBericht = data.errors[foutType];
-          container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">API Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
+          container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">API Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
           return;
         }
 
@@ -271,19 +272,17 @@
           const req = data.response.requests;
 
           if (sub.active !== true) {
-            container.innerHTML = '<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">API Abonnement inactief.</div>';
+            container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">API Abonnement inactief.</div>';
             return;
           }
           if (req.current >= req.limit_day) {
-            container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Limiet bereikt! (${req.current}/${req.limit_day})</div>`;
+            container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Limiet bereikt! (${req.current}/${req.limit_day})</div>`;
             return;
           }
           
-          // Alles ok? Haal de uitslagen op!
           haalLaatsteResultatenOp();
         }
       } catch (e) {
-        // Fallback bij netwerkprobleem
         haalLaatsteResultatenOp();
       }
     }
@@ -292,18 +291,17 @@
       const container = document.getElementById('matches-container');
       
       try {
-        // league=39 (Premier League) - Verander naar league=1 voor het WK
+        // league=1 is het WK (World Cup)
         let response = await fetch("https://v3.football.api-sports.io/fixtures?league=1&status=FT&last=6", {
           method: "GET",
           headers: { "x-apisports-key": API_KEY }
         });
         let data = await response.json();
 
-        // CONTROLEER OP SPECIFIEKE SERVER FOUTMELDINGEN BIJ HET OPHALEN VAN DE WEDSTRIJDEN
         if (data.errors && Object.keys(data.errors).length > 0) {
           const foutType = Object.keys(data.errors)[0];
           const foutBericht = data.errors[foutType];
-          container.innerHTML = `<div style="text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">Data Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
+          container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">Data Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
           return;
         }
 
@@ -316,35 +314,29 @@
             const teams = item.teams;
             const goals = item.goals;
 
+            // Alleen vlaggen/logo's, geen tekstnamen en geen status-text meer
             row.innerHTML = `
-              <div class="team-left">
-                <span>${teams.home.name}</span>
+              <div class="team-side team-left">
                 <img class="team-logo" src="${teams.home.logo}" alt="vlag" />
               </div>
-              <div class="score-display">${goals.home ?? 0} - ${goals.away ?? 0}</div>
-              <div class="team-right">
+              <div class="score-display">${goals.home ?? 0}-${goals.away ?? 0}</div>
+              <div class="team-side team-right">
                 <img class="team-logo" src="${teams.away.logo}" alt="vlag" />
-                <span>${teams.away.name}</span>
               </div>
-              <div class="match-status">Afgelopen</div>
             `;
             container.appendChild(row);
           });
         } else {
-          container.innerHTML = '<div style="text-align:center;color:#aaa;font-size:13px;margin-top:15px;">Geen uitslagen gevonden.</div>';
+          container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#aaa;font-size:13px;margin-top:15px;">Geen uitslagen gevonden.</div>';
         }
       } catch (err) {
-        container.innerHTML = '<div style="text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Verbindingsfout (Netwerk).</div>';
+        container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Verbindingsfout (Netwerk).</div>';
       }
     }
     
-    // Start direct op bij laden
     startScorebordsysteem();
-    
-    // Ververs elke 120 minuten (7200000 ms)
     setInterval(startScorebordsysteem, 7200000); 
 
-    // Live Klok
     function updateKlokEnDatum() {
       const nu = new Date();
       document.getElementById('live-klok').textContent = `${String(nu.getHours()).padStart(2, '0')}:${String(nu.getMinutes()).padStart(2, '0')}`;
@@ -355,7 +347,6 @@
     updateKlokEnDatum();
     setInterval(updateKlokEnDatum, 1000);
 
-    // Nieuwsbalk (NU.nl RSS)
     let nieuwsArtikelen = [];
     let huidigArtikelIndex = 0;
     async function haalNieuwsOp() {
