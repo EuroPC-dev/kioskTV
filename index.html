@@ -17,7 +17,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #1d82c4; 
+      background-color: #FF4F00; /* Nederlands elftal oranje */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -30,7 +30,7 @@
       height: 100%;
       max-height: 100vh;
       max-width: 100vw;
-      background-color: #1d82c4;
+      background-color: #FF4F00; /* Nederlands elftal oranje */
       box-sizing: border-box;
       overflow: hidden;
     }
@@ -51,7 +51,7 @@
       left: 5%;
       width: 90%;
       height: 28%; 
-      background-color: #ffffff; /* Achtergrond van het vlak is nu wit */
+      background-color: #ffffff; 
       border-radius: 15px;
       box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
       z-index: 10;
@@ -60,7 +60,7 @@
       box-sizing: border-box;
       padding: 15px;
       font-family: 'Inter', sans-serif;
-      color: #333333; /* Tekstkleur voor eventuele statusberichten aangepast naar donker */
+      color: #333333; 
     }
 
     #score-header {
@@ -79,21 +79,25 @@
       object-fit: contain;
     }
 
+    /* Zorgt ervoor dat het grid perfect gecentreerd blijft in het witte vlak */
     #matches-container {
       flex-grow: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(3, 1fr);
-      gap: 12px;
+      grid-template-rows: repeat(3, auto);
+      column-gap: 12px;
+      row-gap: 8px;
+      align-content: center; /* Centreert de rijen verticaal */
+      justify-content: center; /* Centreert de kolommen horizontaal */
     }
 
     .match-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #f5f5f5; /* Lichtgrijze achtergrond voor de rijen op het witte vlak */
+      background-color: #f5f5f5; 
       border-radius: 8px;
-      padding: 5px 10px;
+      padding: 6px 10px;
     }
 
     .team-side { 
@@ -110,7 +114,6 @@
       justify-content: flex-start; 
     }
 
-    /* Vlaggen zijn exact 2x groter gemaakt */
     .team-logo {
       height: clamp(48px, 9.0cqw, 80px);
       width: auto;
@@ -118,16 +121,15 @@
       border-radius: 6px;
     }
 
-    /* Stand-blokje met witte tekstkleur */
     .score-display {
-      background-color: #262626; /* Donkere achtergrond voor goed contrast met witte cijfers */
+      background-color: #262626; 
       padding: 4px 12px;
       border-radius: 6px;
       margin: 0 10px;
       font-family: 'Inter', sans-serif;
       font-weight: 900;
       font-size: clamp(14px, 2.8cqw, 22px);
-      color: #ffffff; /* Kleur van de eindstand is nu wit */
+      color: #ffffff; 
       min-width: 60px;
       text-align: center;
       letter-spacing: 0.5px;
@@ -226,7 +228,7 @@
         <img src="WK.png" alt="WK 2026 Logo" />
       </div>
       <div id="matches-container">
-        <div style="grid-column: span 2; text-align:center; color:#aaa; font-size:13px; margin-top:15px;">API Status controleren...</div>
+        <div style="grid-column: span 2; text-align:center; color:#aaa; font-size:13px;">API Status controleren...</div>
       </div>
     </div>
 
@@ -263,7 +265,7 @@
         if (data.errors && Object.keys(data.errors).length > 0) {
           const foutType = Object.keys(data.errors)[0];
           const foutBericht = data.errors[foutType];
-          container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">API Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
+          container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:11px;">API Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
           return;
         }
 
@@ -272,11 +274,11 @@
           const req = data.response.requests;
 
           if (sub.active !== true) {
-            container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">API Abonnement inactief.</div>';
+            container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;">API Abonnement inactief.</div>';
             return;
           }
           if (req.current >= req.limit_day) {
-            container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Limiet bereikt! (${req.current}/${req.limit_day})</div>`;
+            container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;">Limiet bereikt! (${req.current}/${req.limit_day})</div>`;
             return;
           }
           
@@ -300,7 +302,7 @@
         if (data.errors && Object.keys(data.errors).length > 0) {
           const foutType = Object.keys(data.errors)[0];
           const foutBericht = data.errors[foutType];
-          container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:11px;margin-top:10px;">Data Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
+          container.innerHTML = `<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:11px;">Data Fout (${foutType}):<br><b style="color:white;">${foutBericht}</b></div>`;
           return;
         }
 
@@ -313,7 +315,6 @@
             const teams = item.teams;
             const goals = item.goals;
 
-            // Spatieresultaat toegevoegd bij het streepje: bv "1 - 1"
             row.innerHTML = `
               <div class="team-side team-left">
                 <img class="team-logo" src="${teams.home.logo}" alt="vlag" />
@@ -326,10 +327,10 @@
             container.appendChild(row);
           });
         } else {
-          container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#aaa;font-size:13px;margin-top:15px;">Geen uitslagen gevonden.</div>';
+          container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#aaa;font-size:13px;">Geen uitslagen gevonden.</div>';
         }
       } catch (err) {
-        container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;margin-top:15px;">Verbindingsfout (Netwerk).</div>';
+        container.innerHTML = '<div style="grid-column: span 2; text-align:center;color:#ef4444;font-size:12px;">Verbindingsfout (Netwerk).</div>';
       }
     }
     
