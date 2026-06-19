@@ -15,9 +15,9 @@
     overflow: hidden;
   }
 
-  /* Links: Lijst met 8 scoreborden */
+  /* Links: De lijst met 8 scoreborden */
   .scoreboard-list {
-    width: 460px;
+    width: 480px;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -28,24 +28,33 @@
     overflow-y: auto;
     padding: 40px 0;
     box-sizing: border-box;
+    flex-shrink: 0;
   }
 
-  /* Rechts: YouTube speler zonder balken */
+  /* Rechts: Container voor de video */
   .video-container {
     flex-grow: 1;
-    height: 100vh;
-    background-color: #000;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    background-color: #f9f9f9;
+    padding: 20px;
   }
 
-  .video-container iframe {
-    width: 100vw;
-    height: 56.25vw; /* 16:9 aspect ratio */
-    min-height: 100vh;
-    min-width: 177.77vh; /* Minimal width to cover 100vh */
+  /* De video wrapper: nu 20% groter (1020px max-width) */
+  .video-wrapper {
+    width: 100%;
+    max-width: 1020px; 
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  .video-wrapper iframe {
+    width: 100%;
+    height: 100%;
     border: none;
   }
 
@@ -76,9 +85,11 @@
 <div class="scoreboard-list" id="scoreboard-container"></div>
 
 <div class="video-container">
-    <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLnJJ42LOJsdHCqcsxa9fl9jZgmUqcMjbu&autoplay=1&mute=1&loop=1" 
-            allow="autoplay; encrypted-media" allowfullscreen>
-    </iframe>
+    <div class="video-wrapper">
+        <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLnJJ42LOJsdHCqcsxa9fl9jZgmUqcMjbu&autoplay=1&mute=1&loop=1" 
+                allow="autoplay; encrypted-media" allowfullscreen>
+        </iframe>
+    </div>
 </div>
 
 <script>
