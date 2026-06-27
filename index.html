@@ -41,7 +41,7 @@
     padding: 20px;
   }
 
-  /* De video wrapper: nu 20% groter (1020px max-width) */
+  /* De video wrapper: 1020px max-width */
   .video-wrapper {
     width: 100%;
     max-width: 1020px; 
@@ -52,7 +52,8 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   }
 
-  .video-wrapper iframe {
+  /* Zorg dat de YouTube player de wrapper mooi vult */
+  #yt-player {
     width: 100%;
     height: 100%;
     border: none;
@@ -86,13 +87,14 @@
 
 <div class="video-container">
     <div class="video-wrapper">
-        <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLnJJ42LOJsdHCqcsxa9fl9jZgmUqcMjbu&autoplay=1&mute=1&loop=1" 
-                allow="autoplay; encrypted-media" allowfullscreen>
-        </iframe>
+        <div id="yt-player"></div>
     </div>
 </div>
 
 <script>
+  // -----------------------------------------
+  // 1. FOOTBALL API SCOREBOARDS SCRIPT
+  // -----------------------------------------
   const apiKey = '40dc94f573f9513083b68c7d7ab80ae2';
   const shirtColors = {'NED': '#ff6600', 'SUI': '#dc1523', 'BIH': '#002f6c', 'FRA': '#002395', 'ARG': '#75aadb', 'BRA': '#fecb00', 'GER': '#ffffff', 'ESP': '#c60b1e', 'ITA': '#004b93', 'ENG': '#ffffff', 'USA': '#002868', 'MEX': '#016847', 'CAN': '#ff0000', 'BEL': '#e30613', 'POR': '#ff0000', 'MAR': '#c1272d', 'CRO': '#ff0000', 'JPN': '#000054', 'SEN': '#ffffff', 'URU': '#43a1d5', 'COL': '#fcd116'};
 
@@ -145,6 +147,49 @@
   }
 
   fetchMatches();
+
+  // -----------------------------------------
+  // 2. YOUTUBE IFRAME API SCRIPT (Max 5 video's)
+  // -----------------------------------------
+  
+  // Laad de YouTube IFrame API asynchroon in
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var player;
+  
+  // Deze functie wordt automatisch aangeroepen door de YouTube API zodra deze is geladen
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('yt-player', {
+      host: 'https://www.youtube-nocookie.com', // Nocookie domein behouden
+      playerVars: {
+        listType: 'playlist',
+        list: 'PLnJJ42LOJsdHCqcsxa9fl9jZgmUqcMjbu',
+        autoplay: 1,
+        mute: 1
+      },
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerStateChange(event) {
+    // Luister of er een video start met afspelen
+    if (event.data === YT.PlayerState.PLAYING) {
+      
+      // Vraag op bij de hoeveelste video we momenteel zijn (begint te tellen bij 0)
+      var currentIndex = player.getPlaylistIndex();
+      
+      // Index 5 is de 6e video in de afspeellijst.
+      // Zodra we bij index 5 aankomen, skippen we direct terug naar index 0 (de 1e video)
+      if (currentIndex >= 5) {
+        player.playVideoAt(0); 
+      }
+    }
+  }
 </script>
 
 </body>
